@@ -29,17 +29,31 @@ def too_new?(issue)
   issue.closed_at > @oldest_issue_time_to_keep
 end
 
+MAX_RETRIES = 3
+
 (@options[:first_issue]..@options[:last_issue]).each do |n|
+  @retries = 0
   begin
-    issue = @client.issue(@repo, n)
-  rescue Octokit::NotFound
-    next puts("#{@repo}##{n}: skipping: not found (404).")
+    begin
+      issue = @client.issue(@repo, n)
+    rescue Octokit::NotFound
+      next puts("#{@repo}##{n}: skipping: not found (404).")
+    end
+
+    next puts("#{@repo}##{n}: skipping: already locked.") if issue.locked?
+    next puts("#{@repo}##{n}: skipping: not closed.") unless issue.closed_at
+    next puts("#{@repo}##{n}: skipping: closed recently.") if too_new?(issue)
+    next puts("#{@repo}##{n}: would be locked.") unless @options[:force]
+
+    @client.put("#{issue.url}/lock",
+                accept: "application/vnd.github.the-key-preview")
+    puts "#{@repo}##{n}: locked."
+  rescue Octokit::TooManyRequests
+    sleep @client.rate_limit.resets_in
+    retry
+  rescue Faraday::TimeoutError
+    raise if @retries >= MAX_RETRIES
+    @retries += 1
+    retry
   end
-  next puts("#{@repo}##{n}: skipping: already locked.") if issue.locked?
-  next puts("#{@repo}##{n}: skipping: not closed.") unless issue.closed_at
-  next puts("#{@repo}##{n}: skipping: closed too recently.") if too_new?(issue)
-  next puts("#{@repo}##{n}: would be locked.") unless @options[:force]
-  @client.put("#{issue.url}/lock",
-              accept: "application/vnd.github.the-key-preview")
-  puts "#{@repo}##{n}: locked."
 end
