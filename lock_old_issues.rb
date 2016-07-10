@@ -30,7 +30,11 @@ def too_new?(issue)
 end
 
 (@options[:first_issue]..@options[:last_issue]).each do |n|
-  issue = @client.issue(@repo, n)
+  begin
+    issue = @client.issue(@repo, n)
+  rescue Octokit::NotFound
+    next puts("#{@repo}##{n}: skipping: not found (404).")
+  end
   next puts("#{@repo}##{n}: skipping: already locked.") if issue.locked?
   next puts("#{@repo}##{n}: skipping: not closed.") unless issue.closed_at
   next puts("#{@repo}##{n}: skipping: closed too recently.") if too_new?(issue)
