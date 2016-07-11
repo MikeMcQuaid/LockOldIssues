@@ -49,7 +49,9 @@ MAX_RETRIES = 3
                 accept: "application/vnd.github.the-key-preview")
     puts "#{@repo}##{n}: locked."
   rescue Octokit::TooManyRequests
-    sleep @client.rate_limit.resets_in
+    sleep_seconds = @client.rate_limit.resets_in
+    puts "Rate limited: sleeping for #{sleep_seconds}s..."
+    sleep sleep_seconds
     retry
   rescue Faraday::TimeoutError
     raise if @retries >= MAX_RETRIES
