@@ -28,5 +28,5 @@ Works for locking old issues. Will happily accept pull requests.
 [Mike McQuaid](mailto:mike@mikemcquaid.com)
 
 ## License
-LockOldIssues is licensed under the [MIT License](http://en.wikipedia.org/wiki/MIT_License).
+LockOldIssues is licensed under the [AGPLv3 License](https://en.wikipedia.org/wiki/Affero_General_Public_License).
 The full license text is available in [LICENSE.txt](https://github.com/mikemcquaid/LockOldIssues/blob/master/LICENSE.txt).
