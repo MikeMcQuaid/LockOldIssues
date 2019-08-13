@@ -22,8 +22,6 @@ Now run LockOldIssues:
 ## Status
 Works for locking old issues. Will happily accept pull requests.
 
-[![Build Status](https://travis-ci.org/MikeMcQuaid/LockOldIssues.svg?branch=master)](https://travis-ci.org/MikeMcQuaid/LockOldIssues)
-
 ## Contact
 [Mike McQuaid](mailto:mike@mikemcquaid.com)
 
